@@ -115,7 +115,7 @@ button {
 }
 #letter {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .photo-background {
