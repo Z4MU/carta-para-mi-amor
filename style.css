@@ -15,8 +15,10 @@ body {
 
   -webkit-text-size-adjust: 100%;
     position: relative;
-  overflow: hidden;
+   overflow-x: hidden;
+  overflow-y: auto;
 }
+
 
 /* APP */
 #app {
