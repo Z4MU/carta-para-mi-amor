@@ -31,6 +31,13 @@ const photos = [
   "images/Foto (23).jpeg"
 ];
 
+photos.forEach(src => {
+  const img = document.createElement("img");
+  img.src = src;
+
+  photoContainer.appendChild(img);
+});
+
 // 🔀 Función para mezclar (Shuffle tipo cartas)
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
