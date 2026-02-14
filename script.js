@@ -1,10 +1,14 @@
+// ===============================
 // ELEMENTOS PRINCIPALES
+// ===============================
 const envelope = document.getElementById("envelope");
 const letter = document.getElementById("letter");
 const chat = document.getElementById("chat");
 const photoContainer = document.querySelector(".photo-background");
 
-// 📸 FOTOS DE FONDO (CAMBIA LOS NOMBRES POR LOS TUYOS)
+// ===============================
+// FOTOS
+// ===============================
 const photos = [
   "images/Foto (1).jpeg",
   "images/Foto (2).jpeg",
@@ -31,14 +35,9 @@ const photos = [
   "images/Foto (23).jpeg"
 ];
 
-photos.forEach(src => {
-  const img = document.createElement("img");
-  img.src = src;
-
-  photoContainer.appendChild(img);
-});
-
-// 🔀 Función para mezclar (Shuffle tipo cartas)
+// ===============================
+// MEZCLAR ARRAY (Fisher-Yates)
+// ===============================
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -47,65 +46,60 @@ function shuffleArray(array) {
   return array;
 }
 
-// Copia mezclada
-let shuffledPhotos = shuffleArray([...photos]);
-let photoIndex = 0;
-
-const floatingImages = [];
-
+// ===============================
+// CREAR FOTOS
+// ===============================
 function createInitialPhotos() {
-  for (let i = 0; i < 10; i++) {
+  photoContainer.innerHTML = "";
 
-    // Si se acaban las fotos, volver a mezclar
-    if (photoIndex >= shuffledPhotos.length) {
-      shuffledPhotos = shuffleArray([...photos]);
-      photoIndex = 0;
-    }
+  let shuffled = shuffleArray([...photos]);
 
+  shuffled.forEach(src => {
     const img = document.createElement("img");
-    img.src = shuffledPhotos[photoIndex];
-    photoIndex++;
+    img.src = src;
+    img.style.position = "absolute";
 
     const size = Math.random() * 150 + 120;
     img.style.width = size + "px";
 
-    img.style.top = Math.random() * 80 + "%";
-    img.style.left = Math.random() * 80 + "%";
+    // Posición real en pantalla
+    img.style.left = Math.random() * (window.innerWidth - size) + "px";
+    img.style.top = Math.random() * (window.innerHeight - size) + "px";
 
     const rotate = Math.random() * 20 - 10;
     img.dataset.rotate = rotate;
 
     img.style.transform = `rotate(${rotate}deg)`;
-    img.style.opacity = 0.5;
+    img.style.opacity = 0.45;
 
     photoContainer.appendChild(img);
-    floatingImages.push(img);
-  }
-}
 
-function animateAllPhotos() {
-  floatingImages.forEach(img => {
-    const rotate = parseFloat(img.dataset.rotate);
-
-    const moveX = Math.random() * 120 - 60;
-    const moveY = Math.random() * 120 - 60;
-
-    img.animate(
-      [
-        { transform: `translate(0px, 0px) rotate(${rotate}deg)` },
-        { transform: `translate(${moveX}px, ${moveY}px) rotate(${rotate + 5}deg)` }
-      ],
-      {
-        duration: 6000 + Math.random() * 4000,
-        direction: "alternate",
-        iterations: Infinity,
-        easing: "ease-in-out"
-      }
-    );
+    animatePhoto(img);
   });
 }
 
+// ===============================
+// ANIMACIÓN INDEPENDIENTE
+// ===============================
+function animatePhoto(img) {
+  const rotate = parseFloat(img.dataset.rotate);
 
+  const moveX = Math.random() * 120 - 60;
+  const moveY = Math.random() * 120 - 60;
+
+  img.animate(
+    [
+      { transform: `translate(0px, 0px) rotate(${rotate}deg)` },
+      { transform: `translate(${moveX}px, ${moveY}px) rotate(${rotate + 5}deg)` }
+    ],
+    {
+      duration: 6000 + Math.random() * 4000,
+      direction: "alternate",
+      iterations: Infinity,
+      easing: "ease-in-out"
+    }
+  );
+}
 
 
 
@@ -215,50 +209,19 @@ const reasons = [
 
 let index = 0;
 
-// ✨ ABRIR CARTA
 function openLetter() {
   envelope.classList.add("hidden");
   letter.classList.remove("hidden");
 
-
-
   if (navigator.vibrate) navigator.vibrate(15);
 }
 
-// 📸 CARGAR FOTOS DE FONDO ANIMADAS
-function loadPhotos() {
-  const container = document.querySelector(".photo-background");
-
-  // Limpia por si se vuelve a abrir
-  container.innerHTML = "";
-
-  photos.forEach((src, i) => {
-    const img = document.createElement("img");
-    img.src = src;
-
-    // Posición aleatoria
-    img.style.top = Math.random() * 80 + "%";
-    img.style.left = Math.random() * 80 + "%";
-
-    // Tamaño aleatorio ligero
-    img.style.width = 120 + Math.random() * 80 + "px";
-
-    // Retraso diferente para cada foto
-    img.style.animationDelay = (i * 4) + "s";
-
-    container.appendChild(img);
-  });
-}
-
-// 💬 INICIAR MENSAJES
 function startMessages() {
   letter.classList.add("hidden");
   chat.classList.remove("hidden");
-
   showMessage();
 }
 
-// 💕 MOSTRAR MENSAJES UNO POR UNO
 function showMessage() {
   if (index >= reasons.length) return;
 
@@ -267,14 +230,15 @@ function showMessage() {
   msg.textContent = reasons[index];
 
   chat.appendChild(msg);
-
-  // Scroll automático tipo app
   chat.scrollTop = chat.scrollHeight;
 
   index++;
-
   setTimeout(showMessage, 700);
 }
 
-createInitialPhotos();
-animateAllPhotos();
+// ===============================
+// INICIAR CUANDO TODO CARGA
+// ===============================
+window.addEventListener("load", () => {
+  createInitialPhotos();
+});
